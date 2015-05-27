@@ -1,14 +1,6 @@
-require 'get/builders/base_builder'
-require 'get/builders/ancestry_builder'
-require 'get/builders/query_builder'
-require 'get/core_extensions/string'
-require 'get/builders'
-require 'get/configuration'
-require 'get/db'
-require 'get/entities'
-require 'get/entity_factory'
-require 'get/errors'
-require 'get/run_methods'
+require 'tradesman/configuration'
+require 'tradesman/errors'
+require 'tradesman/run_methods'
 require 'horza'
 
 module Tradesman
