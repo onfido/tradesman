@@ -9,6 +9,7 @@ require 'tradesman/errors'
 require 'tradesman/parser'
 require 'tradesman/run_methods'
 require 'horza'
+require 'tzu'
 
 module Tradesman
   extend Tradesman::Configuration
@@ -24,8 +25,8 @@ module Tradesman
 
     def const_missing(class_name)
       parser = ::Tradesman::Parser.new(class_name)
-      return super(name) unless parser.match?
-      Builders.generate_class(name, parser.method)
+      return super(class_name) unless parser.match?
+      Builders.generate_class(parser)
     end
   end
 

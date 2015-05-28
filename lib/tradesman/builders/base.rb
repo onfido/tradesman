@@ -14,6 +14,10 @@ module Tradesman
       private
 
       def class_args
+        {
+          subject: @subject,
+          parent: @parent
+        }
       end
     end
   end
