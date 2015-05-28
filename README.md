@@ -36,7 +36,7 @@ Tradesman::CreateUserForEmployer.run(employer_id, user_params)
 
 ## Why is this necessary?
 
-At Onfido, we observed that many actions we programmed were are simple and repeated (albeit with different records and parameter lists) in several locations. They can generally be broken in to the following steps:
+At Onfido, we observed that many Create, Update and Delete actions we programmed were are simple and repeated (albeit with different records and parameter lists) in several locations. They can generally be broken in to the following steps:
 
 - Query existing record by some group of parameters, but generally just by :id (Update and Delete only)
 - Return 404 if record does not exist

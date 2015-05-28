@@ -1,5 +1,12 @@
+require 'tradesman/builders'
+require 'tradesman/builders/base'
+require 'tradesman/builders/create'
+require 'tradesman/builders/create_for_parent'
+require 'tradesman/builders/delete'
+require 'tradesman/builders/update'
 require 'tradesman/configuration'
 require 'tradesman/errors'
+require 'tradesman/parser'
 require 'tradesman/run_methods'
 require 'horza'
 
@@ -13,6 +20,12 @@ module Tradesman
       base.class_eval do
         extend ::Tradesman::RunMethods
       end
+    end
+
+    def const_missing(class_name)
+      parser = ::Tradesman::Parser.new(class_name)
+      return super(name) unless parser.match?
+      Builders.generate_class(name, parser.method)
     end
   end
 
