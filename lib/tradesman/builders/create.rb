@@ -4,24 +4,13 @@ module Tradesman
       private
 
       def template_class(args)
-        Class.new do
-          include ::Tzu
-          include ::Tzu::Validation
-
-          class << self
-            attr_reader :store
-
-            def adapter
-              Tradesman.adapter.new(store)
-            end
-          end
-
+        Class.new(::Tradesman::Template) do
           @store = Tradesman.adapter.context_for_entity(args[:subject])
 
-          def call(params)
+          private
+
+          def execute(params)
             self.class.adapter.create!(params)
-          rescue Horza::Errors::RecordInvalid => e
-            invalid! e
           end
         end
       end

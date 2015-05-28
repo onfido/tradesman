@@ -1,3 +1,5 @@
+require 'horza'
+require 'tzu'
 require 'tradesman/builders'
 require 'tradesman/builders/base'
 require 'tradesman/builders/create'
@@ -8,8 +10,7 @@ require 'tradesman/configuration'
 require 'tradesman/errors'
 require 'tradesman/parser'
 require 'tradesman/run_methods'
-require 'horza'
-require 'tzu'
+require 'tradesman/template'
 
 module Tradesman
   extend Tradesman::Configuration
