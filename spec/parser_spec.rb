@@ -58,6 +58,66 @@ describe Tradesman::Parser do
       end
     end
 
+    context 'CreateCloudFormationForSky' do
+      subject { Tradesman::Parser.new('CreateCloudFormationForSky') }
+
+      it 'finds a match' do
+        expect(subject.match?).to be true
+      end
+
+      it 'parses the action' do
+        expect(subject.action).to eq :create
+      end
+
+      it 'parses the subject' do
+        expect(subject.subject).to eq :cloud_formation
+      end
+
+      it 'parses the parent' do
+        expect(subject.parent).to eq :sky
+      end
+    end
+
+    context 'CreateWallForFortress' do
+      subject { Tradesman::Parser.new('CreateWallForFortress') }
+
+      it 'finds a match' do
+        expect(subject.match?).to be true
+      end
+
+      it 'parses the action' do
+        expect(subject.action).to eq :create
+      end
+
+      it 'parses the subject' do
+        expect(subject.subject).to eq :wall
+      end
+
+      it 'parses the parent' do
+        expect(subject.parent).to eq :fortress
+      end
+    end
+
+    context 'CreateHailForCloudFormation' do
+      subject { Tradesman::Parser.new('CreateHailForCloudFormation') }
+
+      it 'finds a match' do
+        expect(subject.match?).to be true
+      end
+
+      it 'parses the action' do
+        expect(subject.action).to eq :create
+      end
+
+      it 'parses the subject' do
+        expect(subject.subject).to eq :hail
+      end
+
+      it 'parses the parent' do
+        expect(subject.parent).to eq :cloud_formation
+      end
+    end
+
     context 'UpdateFortressForSkeletor' do
       subject { Tradesman::Parser.new('UpdateFortressForSkeletor') }
 
