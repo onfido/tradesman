@@ -81,7 +81,7 @@ describe Tradesman do
 
       context 'for parent' do
         let(:employer) { TradesmanSpec::Employer.create }
-        let(:outcome) { Tradesman::CreateUser4Employer.run(parent_id: employer.id, last_name: 'Turner') }
+        let(:outcome) { Tradesman::CreateUserForEmployer.run(parent_id: employer.id, last_name: 'Turner') }
 
         it 'creates a new record' do
           expect(outcome.success?).to be true
