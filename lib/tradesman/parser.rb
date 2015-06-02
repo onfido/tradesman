@@ -3,7 +3,7 @@ module Tradesman
     attr_reader :class_name, :action_string, :subject_string, :parent_string
 
     PARSE_REGEX = /(Create|Update|Delete)(.+)/
-    PARSE_REGEX_WITH_PARENT = /(Create|Update|Delete)(.+)4(.+)/
+    PARSE_REGEX_WITH_PARENT = /(Create)([A-Z]+.+)For([A-Z]+.+)/
 
     def initialize(class_name)
       @class_name = class_name
@@ -31,7 +31,7 @@ module Tradesman
     private
 
     def regex
-      /.+4.+/.match(@class_name) ? PARSE_REGEX_WITH_PARENT : PARSE_REGEX
+      /.+For[A-Z]+.+/.match(@class_name) ? PARSE_REGEX_WITH_PARENT : PARSE_REGEX
     end
 
     def str_to_sym(str)
