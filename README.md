@@ -10,7 +10,15 @@ Tradesman dynamically generates classes with human-readble names that handle the
 # Simple - Returns an Outcome
 outcome = Tradesman::CreateUser.run(user_params)
 outcome.success? #=> true
+outcome.failure? #=> false
 outcome.result #=> User Entity
+
+# With invalid parameters - Returns an Invalid Outcome
+outcome = Tradesman::CreateUser.run(invalid_user_params)
+outcome.success? #=> false
+outcome.failure? #=> true
+outcome.result #=> nil
+outcome.type #=> :validation
 
 # Passing a block - Well-suited for Controllers
 Tradesman::UpdateUser.run({ id: params[:id] }.merge(user_update_params)) do
@@ -94,8 +102,8 @@ The Tradesman version says exactly what it does, is cruft free, and is much quic
 
 **Define your adapter**
 
-_config/initializers/tradesman.rb_
 ```ruby
+# config/initializers/tradesman.rb
 Tradesman.configure { |config| config.adapter = :active_record }
 ```
 
@@ -120,8 +128,8 @@ end
 
 In order to help Tradesman lazy load these models, you need to enable development mode and configure any namespaces:
 
-_config/initializers/tradesman.rb_
 ```ruby
+# config/initializers/tradesman.rb
 Tradesman.configure do |config|
   config.adapter = :active_record
   config.development_mode = Rails.env.development?
