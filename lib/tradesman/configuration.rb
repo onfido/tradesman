@@ -20,11 +20,17 @@ module Tradesman
   end
 
   class Config
-    attr_accessor :adapter
+    attr_accessor :adapter, :namespaces
 
-    def set_adapter(adapter)
+    def adapter=(adapter)
       Horza.configure { |config| config.adapter = adapter }
       @adapter = Horza.adapter
+    end
+
+    def namespaces=(namespaces)
+      fail Tradesman::Errors::Base.new 'namespaces must be an array' unless namespaces.is_a? Array
+      Horza.configure { |config| config.namespaces = namespaces }
+      @namespaces = namespaces
     end
   end
 end

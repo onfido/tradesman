@@ -13,7 +13,7 @@ outcome.success? #=> true
 outcome.result #=> User Entity
 
 # Passing a block - Well-suited for Controllers
-Tradesman::UpdateUser.run(params[:id], user_update_params) do
+Tradesman::UpdateUser.run({ id: params[:id] }.merge(user_update_params)) do
   success do |result|
     render(text: 'true', status: 200)
   end
@@ -28,10 +28,10 @@ Tradesman::UpdateUser.run(params[:id], user_update_params) do
 end
 
 # Can also Delete
-Tradesman::DeleteUser.run(params[:id])
+Tradesman::DeleteUser.run(id: params[:id])
 
 # Or Create as a child of an existing record
-Tradesman::CreateUserForEmployer.run(employer_id, user_params)
+Tradesman::CreateUserForEmployer.run({ parent_id: employer_id }.merge(user_params))
 ```
 
 ## Why is this necessary?
@@ -68,7 +68,7 @@ Tradesman is designed to handle the above and a few other common use-cases to re
 
 Tradesman version of the above:
 ```ruby
-Tradesman::UpdateUser.run(params[:id], user_params) do
+Tradesman::UpdateUser.run(user_params) do
   success do |result|
     @user = result
     render 'user'
@@ -80,6 +80,74 @@ Tradesman::UpdateUser.run(params[:id], user_params) do
 
   failure { |result| render(text: 'false', status: 400) } # If you prefer one-liners
 end
+
+private
+
+def user_params
+  params.permit(:id, :first_name, :last_name)
+end
 ```
 
 The Tradesman version says exactly what it does, is cruft free, and is much quicker to test (more on that later).
+
+## Config
+
+**Define your adapter**
+
+_config/initializers/tradesman.rb_
+```ruby
+Tradesman.configure { |config| config.adapter = :active_record }
+```
+
+**Development Mode and Model Namespaces**
+
+Rails' lazy-loading in the development environment makes a bit more configuration necessary, particularly if you have wrapped your models in namespaces.
+
+Consider:
+```ruby
+module MyNamespace
+  class Employer < ActiveRecord::Base
+    has_many :users
+  end
+end
+
+module MyOtherNamespace
+  class User < ActiveRecord::Base
+    belongs_to :employer
+  end
+end
+```
+
+In order to help Tradesman lazy load these models, you need to enable development mode and configure any namespaces:
+
+_config/initializers/tradesman.rb_
+```ruby
+Tradesman.configure do |config|
+  config.adapter = :active_record
+  config.development_mode = Rails.env.development?
+  config.namespaces = [MyNamespace, MyOtherNamespace]
+end
+```
+
+**Reset Tradesman** _(Can be done at runtime or in tests)_
+```ruby
+Tradesman.reset
+```
+
+## Adapters
+
+Tradesman sits on top of [Horza](https://github.com/onfido/horza/), and can use any of its adapters.
+
+## Edge Cases
+
+**Models ending with double 's'**
+
+Some models end with a double 's', ie `Address`, `Business`. Rails has a well documented inability to properly inflect this type of word.
+There is a simple fix:
+
+```ruby
+# config/initializers/inflections.rb
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.singular(/ess$/i, 'ess')
+end
+```

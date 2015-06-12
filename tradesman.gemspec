@@ -3,7 +3,7 @@ require 'orm_adapter/version'
 
 Gem::Specification.new do |s|
   s.name = 'tradesman'
-  s.version = '0.2.0'
+  s.version = '0.3.0'
   s.platform = Gem::Platform::RUBY
   s.authors = ['Blake Turner', 'Morgan Bruce']
   s.description = 'Encapsulate common application behaviour with dynamically generated classes'
@@ -16,8 +16,8 @@ Gem::Specification.new do |s|
   s.test_files    = Dir.glob("{spec}/**/*")
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'horza', '0.2.0'
-  s.add_runtime_dependency 'tzu', '0.0.1.0'
+  s.add_runtime_dependency 'horza', '~> 0.3.3'
+  s.add_runtime_dependency 'tzu', '~> 0.0.1.0'
 
   s.add_development_dependency 'bundler', '>= 1.0.0'
   s.add_development_dependency 'activerecord', '>= 3.2.15'
