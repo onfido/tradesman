@@ -32,7 +32,7 @@ end
 
 describe Tradesman do
   let(:adapter) { :active_record }
-  before { Tradesman.configure { |config| config.set_adapter(adapter) } }
+  before { Tradesman.configure { |config| config.adapter = adapter } }
   after do
     TradesmanSpec::User.delete_all
     TradesmanSpec::StrictUser.delete_all
@@ -52,6 +52,40 @@ describe Tradesman do
 
       it 'throws error' do
         expect { Tradesman.adapter }.to raise_error(Tradesman::Errors::Base)
+      end
+    end
+  end
+
+  context 'namespaces' do
+    context 'when no namespaces are set' do
+      it 'does not forward namespaces to Horza' do
+        expect(Horza.configuration.namespaces.empty?).to be true
+      end
+    end
+    context 'when namespaces are set' do
+      before do
+        Tradesman.configure { |config| config.namespaces = [TradesmanSpec] }
+      end
+
+      it 'forwards namespaces to Horza' do
+        expect(Horza.configuration.namespaces).to eq [TradesmanSpec]
+      end
+    end
+  end
+
+  context 'development_mode' do
+    context 'when development_mode is not set' do
+      it 'does not forward namespaces to Horza' do
+        expect(Horza.configuration.development_mode).to be nil
+      end
+    end
+    context 'when namespaces are set' do
+      before do
+        Tradesman.configure { |config| config.development_mode = true }
+      end
+
+      it 'forwards namespaces to Horza' do
+        expect(Horza.configuration.development_mode).to be true
       end
     end
   end
