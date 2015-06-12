@@ -73,6 +73,23 @@ describe Tradesman do
     end
   end
 
+  context 'development_mode' do
+    context 'when development_mode is not set' do
+      it 'does not forward namespaces to Horza' do
+        expect(Horza.configuration.development_mode).to be nil
+      end
+    end
+    context 'when namespaces are set' do
+      before do
+        Tradesman.configure { |config| config.development_mode = true }
+      end
+
+      it 'forwards namespaces to Horza' do
+        expect(Horza.configuration.development_mode).to be true
+      end
+    end
+  end
+
   context '#run' do
     context 'Create' do
       context 'when parameters are valid' do

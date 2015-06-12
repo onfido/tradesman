@@ -27,6 +27,10 @@ module Tradesman
       @adapter = Horza.adapter
     end
 
+    def development_mode=(mode)
+      Horza.configure { |config| config.development_mode = mode }
+    end
+
     def namespaces=(namespaces)
       fail Tradesman::Errors::Base.new 'namespaces must be an array' unless namespaces.is_a? Array
       Horza.configure { |config| config.namespaces = namespaces }
