@@ -51,7 +51,7 @@ describe Tradesman do
       after { Tradesman.reset }
 
       it 'throws error' do
-        expect { Tradesman.adapter }.to raise_error(Tradesman::Errors::Base)
+        expect { Tradesman.adapter }.to raise_error(Tradesman::Base)
       end
     end
   end
@@ -192,7 +192,7 @@ describe Tradesman do
 
     context 'when id is invalid' do
       it 'throws error' do
-        expect { Tradesman::UpdateStrictUser.go('not_an_integer', last_name: nil) }.to raise_error Tradesman::Errors::InvalidId
+        expect { Tradesman::UpdateStrictUser.go('not_an_integer', last_name: nil) }.to raise_error Tradesman::InvalidId
       end
     end
 
@@ -287,7 +287,7 @@ describe Tradesman do
       context 'when parameters are invalid' do
         let(:outcome) { Tradesman::CreateStrictUser.go!({}) }
         it 'throws error' do
-          expect { outcome }.to raise_error Tradesman::Errors::Invalid
+          expect { outcome }.to raise_error Tradesman::Invalid
         end
       end
 
@@ -332,7 +332,7 @@ describe Tradesman do
       let(:outcome) { Tradesman::UpdateStrictUser.go!(strict_user, last_name: nil) }
 
       it 'throws error' do
-        expect { outcome }.to raise_error Tradesman::Errors::Invalid
+        expect { outcome }.to raise_error Tradesman::Invalid
       end
     end
   end

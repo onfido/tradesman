@@ -9,11 +9,13 @@ require 'tradesman/builders/update'
 require 'tradesman/class_methods'
 require 'tradesman/configuration'
 require 'tradesman/errors'
+require 'tradesman/error_handling'
 require 'tradesman/parser'
 require 'tradesman/template'
 
 module Tradesman
-  extend Tradesman::Configuration
+  extend Configuration
+  include Errors
 
   class << self
     attr_writer :configuration

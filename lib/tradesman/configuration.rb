@@ -14,7 +14,7 @@ module Tradesman
     end
 
     def adapter
-      raise ::Tradesman::Errors::Base.new('Adapter has not been configured') unless configuration.adapter
+      raise ::Tradesman::Base.new('Adapter has not been configured') unless configuration.adapter
       @adapter ||= configuration.adapter
     end
   end
@@ -32,7 +32,7 @@ module Tradesman
     end
 
     def namespaces=(namespaces)
-      fail Tradesman::Errors::Base.new 'namespaces must be an array' unless namespaces.is_a? Array
+      fail Tradesman::Base.new 'namespaces must be an array' unless namespaces.is_a? Array
       Horza.configure { |config| config.namespaces = namespaces }
       @namespaces = namespaces
     end

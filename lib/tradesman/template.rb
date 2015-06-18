@@ -3,18 +3,19 @@ module Tradesman
     include ::Tzu
     include ::Tzu::Validation
     extend ::Tradesman::ClassMethods
+    extend ::Tradesman::ErrorHandling
 
     def call(params)
       return execute_single(params) unless (params.is_a?(Array) || params[:id].is_a?(Array))
       execute_multiple(params)
-    rescue Horza::Errors::RecordInvalid, Horza::Errors::RecordNotFound => e
+    rescue *self.class.expected_horza_errors_map.keys => e
       invalid! e
     end
 
     private
 
     def execute_single(params)
-      raise Tradesman::Errors::MethodNotImplemented.new('You must implement this method in a child class')
+      raise Tradesman::MethodNotImplemented.new('You must implement this method in a child class')
     end
 
     def execute_multiple(params_hash)
