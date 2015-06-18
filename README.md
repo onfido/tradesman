@@ -61,7 +61,7 @@ def update
   return render(text: 'false', status: 404) unless @user
 
   @user.assign_attributes(user_params)
-  return render(text: 'false', status: 400) unless @user.save
+  return render(text: 'false', status: 422) unless @user.save
 
   render 'user'
 end
@@ -85,7 +85,7 @@ Tradesman::UpdateUser.go(user_id, user_params) do
   end
 
   invalid do |error|
-    render(text: 'false', status: 404)
+    render(text: error.message, status: 422)
   end
 
   failure { |result| render(text: 'false', status: 400) } # If you prefer one-liners
@@ -94,7 +94,7 @@ end
 private
 
 def user_params
-  params.permit(:id, :first_name, :last_name)
+  params.permit(:first_name, :last_name, :email)
 end
 ```
 
