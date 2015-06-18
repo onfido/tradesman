@@ -15,7 +15,6 @@ require 'tradesman/template'
 
 module Tradesman
   extend Configuration
-  include Errors
 
   class << self
     attr_writer :configuration
