@@ -8,20 +8,21 @@ Tradesman dynamically generates classes with human-readble names that handle the
 
 ```ruby
 # Simple - Returns an Outcome
-outcome = Tradesman::CreateUser.run(user_params)
+outcome = Tradesman::CreateUser.go(user_params)
 outcome.success? #=> true
 outcome.failure? #=> false
 outcome.result #=> User Entity
 
 # With invalid parameters - Returns an Invalid Outcome
-outcome = Tradesman::CreateUser.run(invalid_user_params)
+outcome = Tradesman::CreateUser.go(invalid_user_params)
 outcome.success? #=> false
 outcome.failure? #=> true
 outcome.result #=> nil
 outcome.type #=> :validation
 
 # Passing a block - Well-suited for Controllers
-Tradesman::UpdateUser.run({ id: params[:id] }.merge(user_update_params)) do
+# NOTE: When passing a block, use #go, not #go! (#go with block implicitly handles its own errors)
+Tradesman::UpdateUser.go(params[:id], user_update_params) do
   success do |result|
     render(text: 'true', status: 200)
   end
@@ -36,10 +37,11 @@ Tradesman::UpdateUser.run({ id: params[:id] }.merge(user_update_params)) do
 end
 
 # Can also Delete
-Tradesman::DeleteUser.run(id: params[:id])
+Tradesman::DeleteUser.go(params[:id])
 
 # Or Create as a child of an existing record
-Tradesman::CreateUserForEmployer.run({ parent_id: employer_id }.merge(user_params))
+# You can use either :id or an object that responds to :id as the first argument
+Tradesman::CreateUserForEmployer.go(employer, user_params)
 ```
 
 ## Why is this necessary?
@@ -76,7 +78,7 @@ Tradesman is designed to handle the above and a few other common use-cases to re
 
 Tradesman version of the above:
 ```ruby
-Tradesman::UpdateUser.run(user_params) do
+Tradesman::UpdateUser.go(user_id, user_params) do
   success do |result|
     @user = result
     render 'user'

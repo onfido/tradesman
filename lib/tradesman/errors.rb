@@ -6,7 +6,10 @@ module Tradesman
     class MethodNotImplemented < StandardError
     end
 
-    class RecordNotFound < StandardError
+    class Invalid < StandardError
+    end
+
+    class Failure < StandardError
     end
   end
 end

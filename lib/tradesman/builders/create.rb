@@ -7,6 +7,16 @@ module Tradesman
         Class.new(::Tradesman::Template) do
           @store = Tradesman.adapter.context_for_entity(args[:subject])
 
+          class << self
+            def go(params, *context, &block)
+              run(params, *context, &block)
+            end
+
+            def go!(params, *context)
+              run_and_convert_exceptions { run!(params, *context) }
+            end
+          end
+
           private
 
           def execute(params)

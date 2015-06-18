@@ -9,7 +9,6 @@ require 'tradesman/builders/update'
 require 'tradesman/configuration'
 require 'tradesman/errors'
 require 'tradesman/parser'
-require 'tradesman/run_methods'
 require 'tradesman/template'
 
 module Tradesman
@@ -29,16 +28,5 @@ module Tradesman
       return super(class_name) unless parser.match?
       Builders.generate_class(parser)
     end
-  end
-
-  def run
-    run!
-  rescue ::Tradesman::Errors::Base
-  end
-
-  def run!
-    call
-  rescue *Tradesman.adapter.expected_errors => e
-    raise ::Tradesman::Errors::Base.new(e.message)
   end
 end

@@ -90,10 +90,10 @@ describe Tradesman do
     end
   end
 
-  context '#run' do
+  context '#go' do
     context 'Create' do
       context 'when parameters are valid' do
-        let(:outcome) { Tradesman::CreateUser.run(last_name: 'Turner') }
+        let(:outcome) { Tradesman::CreateUser.go(last_name: 'Turner') }
 
         it 'creates a new record' do
           expect(outcome.success?).to be true
@@ -106,7 +106,7 @@ describe Tradesman do
       end
 
       context 'when parameters are invalid' do
-        let(:outcome) { Tradesman::CreateStrictUser.run(first_name: 'Turner') }
+        let(:outcome) { Tradesman::CreateStrictUser.go(first_name: 'Turner') }
         it 'returns an invalid outcome' do
           expect(outcome.success?).to be false
           expect(outcome.type).to eq :validation
@@ -115,7 +115,7 @@ describe Tradesman do
 
       context 'for parent' do
         let(:employer) { TradesmanSpec::Employer.create }
-        let(:outcome) { Tradesman::CreateUserForEmployer.run(parent_id: employer.id, last_name: 'Turner') }
+        let(:outcome) { Tradesman::CreateUserForEmployer.go(employer.id, last_name: 'Turner') }
 
         it 'creates a new record' do
           expect(outcome.success?).to be true
@@ -137,7 +137,7 @@ describe Tradesman do
   context 'Update' do
     let(:user) { TradesmanSpec::User.create(last_name: 'Smith') }
     context 'when parameters are valid' do
-      let(:outcome) { Tradesman::UpdateUser.run(id: user.id, last_name: 'Turner') }
+      let(:outcome) { Tradesman::UpdateUser.go(user.id, last_name: 'Turner') }
 
       it 'executes successfully' do
         expect(outcome.success?).to be true
@@ -151,7 +151,7 @@ describe Tradesman do
 
     context 'when parameters are invalid' do
       let(:strict_user) { TradesmanSpec::StrictUser.create(last_name: 'Smith') }
-      let(:outcome) { Tradesman::UpdateStrictUser.run(id: strict_user.id, last_name: nil) }
+      let(:outcome) { Tradesman::UpdateStrictUser.go(strict_user, last_name: nil) }
 
       it 'returns an invalid outcome' do
         expect(outcome.success?).to be false
@@ -163,7 +163,7 @@ describe Tradesman do
   context 'Delete' do
     context 'when parameters are valid' do
       let!(:user) { TradesmanSpec::User.create }
-      let(:outcome) { Tradesman::DeleteUser.run(id: user.id) }
+      let(:outcome) { Tradesman::DeleteUser.go(user) }
 
       it 'executes successfully' do
         expect(outcome.success?).to be true
@@ -176,7 +176,99 @@ describe Tradesman do
     end
 
     context 'when input parameters are invalid' do
-      let(:outcome) { Tradesman::DeleteUser.run(id: 999) }
+      let(:outcome) { Tradesman::DeleteUser.go(id: 999) }
+      it 'returns an invalid outcome' do
+        expect(outcome.success?).to be false
+        expect(outcome.type).to eq :validation
+      end
+    end
+  end
+
+  context '#go!' do
+    context 'Create' do
+      context 'when parameters are valid' do
+        let(:outcome) { Tradesman::CreateUser.go!(last_name: 'Turner') }
+
+        it 'creates a new record' do
+          expect(outcome.success?).to be true
+          expect(outcome.result.id.is_a? Integer).to be true
+        end
+
+        it 'returns Horza Entity' do
+          expect(outcome.result.is_a? Horza::Entities::Single).to be true
+        end
+      end
+
+      context 'when parameters are invalid' do
+        let(:outcome) { Tradesman::CreateStrictUser.go!(first_name: 'Turner') }
+        it 'throws error' do
+          expect { outcome }.to raise_error Tradesman::Errors::Invalid
+        end
+      end
+
+      context 'for parent' do
+        let(:employer) { TradesmanSpec::Employer.create }
+        let(:outcome) { Tradesman::CreateUserForEmployer.go!(employer.id, last_name: 'Turner') }
+
+        it 'creates a new record' do
+          expect(outcome.success?).to be true
+          expect(outcome.result.id.is_a? Integer).to be true
+        end
+
+        it 'associates child with parent' do
+          expect(outcome.result.employer_id).to eq employer.id
+        end
+
+        it 'associates parent with child' do
+          outcome
+          expect(employer.users.first.id).to eq outcome.result.id
+        end
+      end
+    end
+  end
+
+  context 'Update' do
+    let(:user) { TradesmanSpec::User.create(last_name: 'Smith') }
+    context 'when parameters are valid' do
+      let(:outcome) { Tradesman::UpdateUser.go!(user.id, last_name: 'Turner') }
+
+      it 'executes successfully' do
+        expect(outcome.success?).to be true
+      end
+
+      it 'updates record' do
+        expect(outcome.result.last_name).to eq 'Turner'
+        expect(user.reload.last_name).to eq 'Turner'
+      end
+    end
+
+    context 'when parameters are invalid' do
+      let(:strict_user) { TradesmanSpec::StrictUser.create(last_name: 'Smith') }
+      let(:outcome) { Tradesman::UpdateStrictUser.go!(strict_user, last_name: nil) }
+
+      it 'throws error' do
+        expect { outcome }.to raise_error Tradesman::Errors::Invalid
+      end
+    end
+  end
+
+  context 'Delete' do
+    context 'when parameters are valid' do
+      let!(:user) { TradesmanSpec::User.create }
+      let(:outcome) { Tradesman::DeleteUser.go!(user) }
+
+      it 'executes successfully' do
+        expect(outcome.success?).to be true
+        expect(outcome.result).to be true
+      end
+
+      it 'deletes record' do
+        expect { outcome }.to change(TradesmanSpec::User, :count).by(-1)
+      end
+    end
+
+    context 'when input parameters are invalid' do
+      let(:outcome) { Tradesman::DeleteUser.go(id: 999) }
       it 'returns an invalid outcome' do
         expect(outcome.success?).to be false
         expect(outcome.type).to eq :validation
