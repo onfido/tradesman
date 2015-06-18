@@ -19,7 +19,7 @@ module Tradesman
 
           private
 
-          def execute(params)
+          def execute_single(params)
             parent = self.class.parent_adapter.get!(params[:id])
             self.class.adapter.create!(params.except(:id).merge(relation_id => parent.id))
           end

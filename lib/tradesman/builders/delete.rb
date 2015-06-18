@@ -9,7 +9,7 @@ module Tradesman
 
           class << self
             def go(obj, *context, &block)
-              run(tzu_params(obj, {}), *context, &block)
+              run_and_convert_exceptions { run(tzu_params(obj, {}), *context, &block) }
             end
 
             def go!(obj, *context)
@@ -19,7 +19,7 @@ module Tradesman
 
           private
 
-          def execute(params)
+          def execute_single(params)
             self.class.adapter.delete!(params[:id])
           end
         end

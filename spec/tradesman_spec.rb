@@ -113,6 +113,37 @@ describe Tradesman do
         end
       end
 
+      context 'multiple records' do
+        let(:outcome) { Tradesman::CreateStrictUser.go(param_list) }
+        context 'when all are valid' do
+          let(:param_list) { [{ last_name: 'Turner' }, { last_name: 'Smith' }, { last_name: 'Jones' }] }
+
+          it 'creates one record for each parameter set passed' do
+            expect(outcome.result.length).to eq param_list.length
+            outcome.result.each do |record|
+              expect(record.id.present?).to be true
+            end
+          end
+        end
+
+        context 'when one is valid' do
+          let(:param_list) { [{ first_name: 'Turner' }, { last_name: 'Smith' }, { age: 25 }] }
+
+          it 'creates invalid entities when params are invalid, valid entity otherwise' do
+            entities = outcome.result
+            expect(entities.length).to eq param_list.length
+
+            expect(entities.first.id).to be nil
+            expect(entities.first.valid?).to be false
+
+            expect(entities.second.id.is_a? Integer).to be true
+
+            expect(entities.third.id).to be nil
+            expect(entities.third.valid?).to be false
+          end
+        end
+      end
+
       context 'for parent' do
         let(:employer) { TradesmanSpec::Employer.create }
         let(:outcome) { Tradesman::CreateUserForEmployer.go(employer.id, last_name: 'Turner') }
@@ -158,6 +189,46 @@ describe Tradesman do
         expect(outcome.type).to eq :validation
       end
     end
+
+    context 'when id is invalid' do
+      it 'throws error' do
+        expect { Tradesman::UpdateStrictUser.go('not_an_integer', last_name: nil) }.to raise_error Tradesman::Errors::InvalidId
+      end
+    end
+
+    context 'multiple records' do
+      let(:valid_params) { { last_name: 'Turner' } }
+      let(:outcome) { Tradesman::UpdateStrictUser.go(records, params) }
+
+      # Hash of id => params
+      # Tradesman::UpdateStrictUser.go(hash.keys, hash.values)
+
+      context 'passing array of ids and one valid parameter set' do
+        let(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+        let(:params) { { last_name: 'Smith' } }
+
+        it 'creates one record for each parameter set passed' do
+          expect(outcome.result.length).to eq records.length
+          outcome.result.each do |record|
+            expect(record.last_name).to eq 'Smith'
+            expect(record.id.present?).to be true
+          end
+        end
+      end
+
+      context 'passing array of ids and multiple valid parameters' do
+        let(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+        let(:params) { [{ last_name: 'Smith' }, { last_name: 'Williams' }, { last_name: 'Jones' }] }
+
+        it 'creates one record for each parameter set passed' do
+          results = outcome.result
+          expect(results.length).to eq records.length
+          expect(results.first.last_name).to eq params.first[:last_name]
+          expect(results.second.last_name).to eq params.second[:last_name]
+          expect(results.last.last_name).to eq params.last[:last_name]
+        end
+      end
+    end
   end
 
   context 'Delete' do
@@ -176,10 +247,24 @@ describe Tradesman do
     end
 
     context 'when input parameters are invalid' do
-      let(:outcome) { Tradesman::DeleteUser.go(id: 999) }
+      let(:outcome) { Tradesman::DeleteUser.go(999) }
       it 'returns an invalid outcome' do
         expect(outcome.success?).to be false
         expect(outcome.type).to eq :validation
+      end
+    end
+
+    context 'multiple records' do
+      let(:valid_params) { { last_name: 'Turner' } }
+      let(:outcome) { Tradesman::DeleteStrictUser.go(records) }
+
+      context 'passing array of ids' do
+        let(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+
+        it 'deletes all records' do
+          expect(outcome.result.length).to eq records.length
+          expect(outcome.result.uniq.first).to eq true
+        end
       end
     end
   end
@@ -200,7 +285,7 @@ describe Tradesman do
       end
 
       context 'when parameters are invalid' do
-        let(:outcome) { Tradesman::CreateStrictUser.go!(first_name: 'Turner') }
+        let(:outcome) { Tradesman::CreateStrictUser.go!({}) }
         it 'throws error' do
           expect { outcome }.to raise_error Tradesman::Errors::Invalid
         end
@@ -268,7 +353,7 @@ describe Tradesman do
     end
 
     context 'when input parameters are invalid' do
-      let(:outcome) { Tradesman::DeleteUser.go(id: 999) }
+      let(:outcome) { Tradesman::DeleteUser.go(999) }
       it 'returns an invalid outcome' do
         expect(outcome.success?).to be false
         expect(outcome.type).to eq :validation

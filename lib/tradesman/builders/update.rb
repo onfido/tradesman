@@ -9,7 +9,7 @@ module Tradesman
 
           private
 
-          def execute(params)
+          def execute_single(params)
             self.class.adapter.update!(params[:id], params.except(:id))
           end
         end
