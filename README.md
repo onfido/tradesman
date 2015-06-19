@@ -17,11 +17,14 @@ outcome.result #=> User Entity
 outcome = Tradesman::CreateUser.go(invalid_user_params)
 outcome.success? #=> false
 outcome.failure? #=> true
-outcome.result #=> nil
+outcome.result #=> Error Class
 outcome.type #=> :validation
 
+# With invalid parameters - fail loudly
+outcome = Tradesman::CreateUser.go!(invalid_user_params) #=> raises Tradesman::Invalid or Tradesman::Failure
+
 # Passing a block - Well-suited for Controllers
-# NOTE: When passing a block, use #go, not #go! (#go with block implicitly handles its own errors)
+# When passing a block, use #go, not #go!
 Tradesman::UpdateUser.go(params[:id], user_update_params) do
   success do |result|
     render(text: 'true', status: 200)
@@ -31,7 +34,7 @@ Tradesman::UpdateUser.go(params[:id], user_update_params) do
     render(text: 'false', status: 404)
   end
 
-  failure do |result|
+  failure do |error|
     render(text: 'false', status: 400)
   end
 end
