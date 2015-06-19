@@ -161,6 +161,38 @@ describe Tradesman do
           outcome
           expect(employer.users.first.id).to eq outcome.result.id
         end
+
+        context 'multiple records' do
+          let(:employer) { Tradesman::CreateEmployer.go({}).result }
+          let(:outcome) { Tradesman::CreateStrictUserForEmployer.go(employer, param_list) }
+          context 'when all are valid' do
+            let(:param_list) { [{ last_name: 'Turner' }, { last_name: 'Smith' }, { last_name: 'Jones' }] }
+
+            it 'creates one record for each parameter set passed' do
+              expect(outcome.result.length).to eq param_list.length
+              outcome.result.each do |record|
+                expect(record.id.present?).to be true
+              end
+            end
+          end
+
+          context 'when one is valid' do
+            let(:param_list) { [{ first_name: 'Turner' }, { last_name: 'Smith' }, { age: 25 }] }
+
+            it 'creates invalid entities when params are invalid, valid entity otherwise' do
+              entities = outcome.result
+              expect(entities.length).to eq param_list.length
+
+              expect(entities.first.id).to be nil
+              expect(entities.first.valid?).to be false
+
+              expect(entities.second.id.is_a? Integer).to be true
+
+              expect(entities.third.id).to be nil
+              expect(entities.third.valid?).to be false
+            end
+          end
+        end
       end
     end
   end

@@ -6,7 +6,7 @@ module Tradesman
     extend ::Tradesman::ErrorHandling
 
     def call(params)
-      return execute_single(params) unless (params.is_a?(Array) || params[:id].is_a?(Array))
+      return execute_single(params) unless (params.is_a?(Array) || params[:id].is_a?(Array) || params[:params].is_a?(Array))
       execute_multiple(params)
     rescue *self.class.expected_horza_errors_map.keys => e
       invalid! e

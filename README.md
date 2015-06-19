@@ -45,15 +45,19 @@ Tradesman::CreateUserForEmployer.go(employer, user_params)
 # Create multiple records
 Tradesman::CreateUser.go([user_params, user_params, user_params])
 
+# Create multiple for a single parent
+Tradesman::CreateUserForEmployer.go(employer, [user_params, user_params, user_params])
+
 # Update multiple records with 1 set of parameters
 Tradesman::UpdateUser.go([user1, user2, user3], update_params)
 
 # Update n records with n sets of parameters
-# Whenever you pass an id, you can either pass the id itself, or an object that response to :id
+# Whenever you pass an id, you can either pass the id itself,
+# or an object that response to :id
 update_params = {
   user1.id => user1_params,
-  user2.id => user1_params,
-  user3.id => user1_params
+  user2.id => user2_params,
+  user3.id => user3_params
 }
 Tradesman::UpdateUser.go(update_params.keys, update_params.values)
 
@@ -61,6 +65,35 @@ Tradesman::UpdateUser.go(update_params.keys, update_params.values)
 # Delete multiple records
 Tradesman::DeleteUser.go([id1, id2, id3])
 ```
+
+## Parsing Rules
+
+Classes have the following structure:
+
+`Method` + `Record`
+
+```ruby
+# Examples:
+CreateUser
+UpdateEmployer
+DeleteBlogPost
+```
+
+Where **Method** is one of `Create`, `Update`, or `Delete`, and **Record** is your model classname, CamelCased.
+Note that model namespaces are ignored.
+
+The only exception is when you create a record for a parent. These classes have the following structure:
+
+`Method` + `Record` + `'For'` + `ParentRecord`
+
+```ruby
+# Examples
+CreateUserForEmployer
+CreateInvoiceForCustomer
+```
+
+Where 'For' is a string literal and **ParentRecord** is the parent model classname, CamelCased.
+
 
 ## Why is this necessary?
 
