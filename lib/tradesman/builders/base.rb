@@ -11,6 +11,10 @@ module Tradesman
         template_class(class_args)
       end
 
+      def template_class(class_args)
+        raise Tradesman::MethodNotImplemented.new('You must implement template_class in a child class')
+      end
+
       private
 
       def class_args

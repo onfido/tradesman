@@ -1,5 +1,7 @@
 require 'horza'
 require 'tzu'
+require 'tradesman/mixins/existing_records_multiple_execute'
+require 'tradesman/mixins/new_records_multiple_execute'
 require 'tradesman/builders'
 require 'tradesman/builders/base'
 require 'tradesman/builders/create'
@@ -18,12 +20,6 @@ module Tradesman
 
   class << self
     attr_writer :configuration
-
-    def included(base)
-      base.class_eval do
-        extend ::Tradesman::RunMethods
-      end
-    end
 
     def const_missing(class_name)
       parser = ::Tradesman::Parser.new(class_name)

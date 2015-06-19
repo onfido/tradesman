@@ -5,6 +5,7 @@ module Tradesman
 
       def template_class(args)
         Class.new(::Tradesman::Template) do
+          include ::Tradesman::NewRecordsMultipleExecute
           @store = Tradesman.adapter.context_for_entity(args[:subject])
           @parent_store = Tradesman.adapter.context_for_entity(args[:parent])
           @parent_key = args[:parent]
