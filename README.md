@@ -1,30 +1,27 @@
 # Tradesman
 
-Encapsulate common application behaviour with dynamically generated classes.
-
-Tradesman dynamically generates classes with human-readble names that handle the pass, fail, and invalid results of common create, update, and delete actions.
+Tradesman lets you invoke human-readble classes that handle the pass, fail, and invalid cases of common create, update, and delete actions without having to write the code!
 
 ## Usage
 
 ```ruby
-# Simple - Returns an Outcome
+# Simple - Returns a successful Outcome
 outcome = Tradesman::CreateUser.go(user_params)
 outcome.success? #=> true
 outcome.failure? #=> false
 outcome.result #=> User Entity
 
-# With invalid parameters - Returns an Invalid Outcome
+# With invalid parameters - returns an invalid Outcome
 outcome = Tradesman::CreateUser.go(invalid_user_params)
 outcome.success? #=> false
 outcome.failure? #=> true
 outcome.result #=> Error Class
 outcome.type #=> :validation
 
-# With invalid parameters - fail loudly
+# With invalid parameters - fail loudly!
 outcome = Tradesman::CreateUser.go!(invalid_user_params) #=> raises Tradesman::Invalid or Tradesman::Failure
 
 # Passing a block - Well-suited for Controllers
-# When passing a block, use #go, not #go!
 Tradesman::UpdateUser.go(params[:id], user_update_params) do
   success do |result|
     render(text: 'true', status: 200)
@@ -39,12 +36,30 @@ Tradesman::UpdateUser.go(params[:id], user_update_params) do
   end
 end
 
-# Can also Delete
+# Delete
 Tradesman::DeleteUser.go(params[:id])
 
-# Or Create as a child of an existing record
-# You can use either :id or an object that responds to :id as the first argument
+# Create as a child of an existing record
 Tradesman::CreateUserForEmployer.go(employer, user_params)
+
+# Create multiple records
+Tradesman::CreateUser.go([user_params, user_params, user_params])
+
+# Update multiple records with 1 set of parameters
+Tradesman::UpdateUser.go([user1, user2, user3], update_params)
+
+# Update n records with n sets of parameters
+# Whenever you pass an id, you can either pass the id itself, or an object that response to :id
+update_params = {
+  user1.id => user1_params,
+  user2.id => user1_params,
+  user3.id => user1_params
+}
+Tradesman::UpdateUser.go(update_params.keys, update_params.values)
+
+
+# Delete multiple records
+Tradesman::DeleteUser.go([id1, id2, id3])
 ```
 
 ## Why is this necessary?
