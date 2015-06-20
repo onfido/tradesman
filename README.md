@@ -1,6 +1,6 @@
 # Tradesman
 
-Tradesman lets you invoke human-readble classes that handle the pass, fail, and invalid cases of common create, update, and delete actions without having to write the code!
+Tradesman lets you invoke human-readble classes that handle the pass, fail, and invalid cases of common create, update, and delete actions.
 
 ## Usage
 
@@ -19,7 +19,8 @@ outcome.result #=> Error Class
 outcome.type #=> :validation
 
 # With invalid parameters - fail loudly!
-outcome = Tradesman::CreateUser.go!(invalid_user_params) #=> raises Tradesman::Invalid or Tradesman::Failure
+outcome = Tradesman::CreateUser.go!(invalid_user_params)
+#=> raises Tradesman::Invalid or Tradesman::Failure
 
 # Passing a block - Well-suited for Controllers
 Tradesman::UpdateUser.go(params[:id], user_update_params) do
@@ -52,8 +53,6 @@ Tradesman::CreateUserForEmployer.go(employer, [user_params, user_params, user_pa
 Tradesman::UpdateUser.go([user1, user2, user3], update_params)
 
 # Update n records with n sets of parameters
-# Whenever you pass an id, you can either pass the id itself,
-# or an object that response to :id
 update_params = {
   user1.id => user1_params,
   user2.id => user2_params,
@@ -94,10 +93,63 @@ CreateInvoiceForCustomer
 
 Where 'For' is a string literal and **ParentRecord** is the parent model classname, CamelCased.
 
+## Parameters
+
+**Create**
+
+`Create` classes take either a parameters hash or an array of parameters hashes.
+
+Examples:
+```ruby
+Tradesman::CreateUser.go(params)
+Tradesman::CreateUser.go([params1, params2, params3])
+```
+
+**CreateForParent**
+
+`CreateForParent` classes take a parent and either a parameters hash or an array of parameters hashes.
+The parent can either be an :id or an object that responds to #id.
+
+Examples:
+```ruby
+Tradesman::CreateInvoiceForCustomer.go(customer, invoice_params)
+Tradesman::CreateInvoiceForCustomer.go(123, [invoice1, invoice2, invoice3])
+```
+
+**Update**
+
+`Update` classes take a record or array of records, and a paramter hash or array of parameter hashes.
+
+Examples:
+```ruby
+# Update a single record
+Tradesman::UpdateUser.go(user, update_params)
+
+# Update multiple records with the same parameters
+Tradesman::UpdateUser.go([111, 222, 333], update_params)
+
+# Update n records with n sets of parameters
+update_params = {
+  user1 => user1_params,
+  user2 => user2_params,
+  user3 => user3_params
+}
+Tradesman::UpdateUser.go(update_params.keys, update_params.values)
+```
+
+**Delete**
+
+`Delete` classes take either a record of array of records.
+
+Examples:
+```ruby
+Tradesman::DeleteUser.go(123)
+Tradesman::DeleteUser.go([user1, user2, user3])
+```
 
 ## Why is this necessary?
 
-At Onfido, we observed that many Create, Update and Delete actions we programmed were are simple and repeated (albeit with different records and parameter lists) in several locations. They can generally be broken in to the following steps:
+Many Create, Update and Delete actions we program are simple and often repeated (albeit with different records and parameter lists) in several locations. They can generally be broken in to the following steps:
 
 - Query existing record by some group of parameters, but generally just by :id (Update and Delete only)
 - Return 404 if record does not exist
@@ -149,7 +201,7 @@ def user_params
 end
 ```
 
-The Tradesman version says exactly what it does, is cruft free, and is much quicker to test (more on that later).
+The Tradesman version is self-documenting, cruft-free, and designed for testing.
 
 ## Config
 
@@ -160,9 +212,21 @@ The Tradesman version says exactly what it does, is cruft free, and is much quic
 Tradesman.configure { |config| config.adapter = :active_record }
 ```
 
-**Development Mode and Model Namespaces**
+**Development Mode**
 
-Rails' lazy-loading in the development environment makes a bit more configuration necessary, particularly if you have wrapped your models in namespaces.
+Rails' lazy-loading of classes in the development environment makes a bit more configuration necessary.
+
+```ruby
+# config/initializers/tradesman.rb
+Tradesman.configure do |config|
+  config.adapter = :active_record
+  config.development_mode = Rails.env.development?
+end
+```
+
+**Model Namespaces**
+
+Lazy loading becomes more complex if your models are namespaced.
 
 Consider:
 ```ruby
