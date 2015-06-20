@@ -181,17 +181,19 @@ Tradesman is designed to handle the above and a few other common use-cases to re
 
 Tradesman version of the above:
 ```ruby
-Tradesman::UpdateUser.go(user_id, user_params) do
-  success do |result|
-    @user = result
-    render 'user'
-  end
+def update
+  Tradesman::UpdateUser.go(params[:id], user_params) do
+    success do |result|
+      @user = result
+      render 'user'
+    end
 
-  invalid do |error|
-    render(text: error.message, status: 422)
-  end
+    invalid do |error|
+      render(text: error.message, status: 422)
+    end
 
-  failure { |result| render(text: 'false', status: 400) } # If you prefer one-liners
+    failure { |result| render(text: 'false', status: 400) } # If you prefer one-liners
+  end
 end
 
 private
@@ -207,6 +209,8 @@ The Tradesman version is self-documenting, cruft-free, and designed for testing.
 
 **Define your adapter**
 
+Tradesman sits on top of [Horza](https://github.com/onfido/horza/), and can use any of its adapters.
+
 ```ruby
 # config/initializers/tradesman.rb
 Tradesman.configure { |config| config.adapter = :active_record }
@@ -214,7 +218,7 @@ Tradesman.configure { |config| config.adapter = :active_record }
 
 **Development Mode**
 
-Rails' lazy-loading of classes in the development environment makes a bit more configuration necessary.
+Turn on development mode to help Tradesman cope with Rails' lazy-loading of classes.
 
 ```ruby
 # config/initializers/tradesman.rb
@@ -243,7 +247,7 @@ module MyOtherNamespace
 end
 ```
 
-In order to help Tradesman lazy load these models, you need to enable development mode and configure any namespaces:
+In order to help Tradesman lazy load these models, you need to explicitly configure any namespaces:
 
 ```ruby
 # config/initializers/tradesman.rb
@@ -258,10 +262,6 @@ end
 ```ruby
 Tradesman.reset
 ```
-
-## Adapters
-
-Tradesman sits on top of [Horza](https://github.com/onfido/horza/), and can use any of its adapters.
 
 ## Edge Cases
 
