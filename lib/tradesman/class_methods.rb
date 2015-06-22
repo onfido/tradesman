@@ -24,9 +24,10 @@ module Tradesman
     end
 
     def id_from_obj(obj)
-      return obj.id if obj.respond_to? :id
-      raise Tradesman::InvalidId.new('ID must be an integer') unless obj.is_a? Integer
-      obj
+      id = obj.respond_to?(:id) ? obj.id : obj
+      Integer(id)
+    rescue ArgumentError
+      raise Tradesman::InvalidId.new('You must pass an object that responds to id or an integer')
     end
 
     def prepare_params(params)
