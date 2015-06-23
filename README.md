@@ -263,6 +263,82 @@ end
 Tradesman.reset
 ```
 
+## Mocking & Stubbing in Tests
+
+Tradesman uses the [Tzu](https://github.com/onfido/tzu) command library,
+which has a specialized (and well-documented) gem for mocking/stubbing, [TzuMock](https://github.com/onfido/tzu_mock).
+
+Since Tradesman classes are just dynamically generated Tzu commands with a slightly different interface,
+you must configure TzuMock to accept the Tradesman interface.
+
+```ruby
+# spec/spec_helper.rb
+TzuMock.configure { |config| config.stub_methods = [:go, :go!] }
+```
+
+Then, you can use TzuMock to stub any Tradesman outcome - `success`, `invalid`, and `failure`.
+
+```ruby
+# app/controllers/users_controller.rb
+class UsersController < ActionController::Base
+  def create
+    Tradesman::CreateUser.go(params) do
+      success do |result|
+        @user = result
+        render 'user'
+      end
+
+      invalid do |error|
+        render 'error'
+      end
+    end
+  end
+end
+
+# spec/controllers/users_controller.rb
+describe '#create' do
+  context 'on success' do
+    let(:entity) { Horza.single(FactoryGirl.attributes_for(:user)) }
+
+    before do
+      TzuMock.success(Tradesman::CreateUser, entity)
+      post :create, request
+    end
+
+    it 'assigns user' do
+      expect(assigns(:user)).to eq entity
+    end
+
+    it 'renders the user template' do
+      expect(response).to render_template('user')
+    end
+  end
+
+  context 'on invalid' do
+    before do
+      TzuMock.invalid(Tradesman::CreateUser, { error: 'invalid path' })
+      post :create, request
+    end
+
+    it 'renders the error template' do
+      expect(response).to render_template('error')
+    end
+  end
+end
+```
+
+Note that Tradesman returns [Horza](https://github.com/onfido/horza) entities by default, so it is recommended to return Horza entities when stubbing.
+Horza provides two shortcuts for this:
+
+```ruby
+# Single entity, takes a hash
+Horza.single(hash) #=> Horza::Entities::Single
+
+# Collection, takes an array
+Horza.collection(items) #=> Horza::Entities::Collection
+```
+
+
 ## Edge Cases
 
 **Models ending with double 's'**
