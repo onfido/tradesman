@@ -7,22 +7,20 @@ module Tradesman
         Class.new(::Tradesman::Template) do
           include ::Tradesman::ExistingRecordsMultipleExecute
           @store = Tradesman.adapter.context_for_entity(args[:subject])
-          @parent_store = Tradesman.adapter.context_for_entity(args[:parent])
           @parent_key = args[:parent]
 
           class << self
-            attr_reader :parent_store, :parent_key
-
-            def parent_adapter
-              Tradesman.adapter.new(parent_store)
-            end
+            attr_reader :parent_key
           end
 
           private
 
           def execute_single(params)
-            parent = self.class.parent_adapter.get!(params[:id])
-            self.class.adapter.create!(params.except(:id).merge(relation_id => parent.id))
+            self.class.adapter.create_as_child!(parent_args(params), params.except(:id))
+          end
+
+          def parent_args(params)
+            { klass: self.class.parent_key, id: params[:id] }
           end
 
           def relation_id
