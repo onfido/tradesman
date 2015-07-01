@@ -2,6 +2,11 @@ module Tradesman
   module ExistingRecordsMultipleExecute
     private
 
+    def query_for_ids(params)
+      params[:id] = self.class.adapter.find_all(params[:id]).collect &:id
+      params
+    end
+
     def execute_multiple(params_hash)
       params = params_hash[:params] || params_hash.except(:id)
 

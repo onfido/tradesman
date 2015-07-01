@@ -260,6 +260,23 @@ describe Tradesman do
           expect(results.last.last_name).to eq params.last[:last_name]
         end
       end
+
+      context 'passing query hash and single valid parameters' do
+        let(:query_params) { { last_name: 'Smith' } }
+        let(:update_params) { { last_name: 'Turner' } }
+        let(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+
+        before do
+          Tradesman::CreateStrictUser.go([query_params, query_params, query_params])
+        end
+        it 'updates all records that match the query' do
+          outcome = Tradesman::UpdateStrictUser.go(query_params, update_params)
+          expect(outcome.success?).to be true
+          expect(outcome.result.length).to eq 3
+          expect(outcome.result.first.last_name).to eq 'Turner'
+          expect(outcome.result.last.last_name).to eq 'Turner'
+        end
+      end
     end
   end
 
@@ -296,6 +313,24 @@ describe Tradesman do
         it 'deletes all records' do
           expect(outcome.result.length).to eq records.length
           expect(outcome.result.uniq.first).to eq true
+        end
+      end
+
+      context 'passing query hash and single valid parameters' do
+        let(:query_params) { { last_name: 'Smith' } }
+        let(:update_params) { { last_name: 'Turner' } }
+        let(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+
+        before do
+          Tradesman::CreateStrictUser.go([query_params, query_params, query_params])
+        end
+        it 'updates all records that match the query' do
+          outcome = Tradesman::DeleteStrictUser.go(query_params)
+          expect(outcome.success?).to be true
+          expect(outcome.result.length).to eq 3
+          expect(outcome.result.first).to be true
+          expect(outcome.result.second).to be true
+          expect(outcome.result.third).to be true
         end
       end
     end

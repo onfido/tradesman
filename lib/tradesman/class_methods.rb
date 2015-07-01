@@ -19,7 +19,8 @@ module Tradesman
     end
 
     def prepare_ids(obj)
-      return id_from_obj(obj) unless obj.is_a? Array
+      return obj if (obj.is_a?(Hash) && !obj.respond_to?(:id))
+      return id_from_obj(obj) unless (obj.is_a?(Array) || obj.respond_to?(:push))
       obj.map { |object| id_from_obj(object) }
     end
 

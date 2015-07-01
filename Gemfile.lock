@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     tradesman (1.0.3)
-      horza (~> 0.3.8)
+      horza (~> 0.3.9)
       tzu (~> 0.0.2.0)
 
 GEM
@@ -28,7 +28,7 @@ GEM
     columnize (0.9.0)
     diff-lcs (1.2.5)
     hashie (3.4.0)
-    horza (0.3.8)
+    horza (0.3.9)
       activesupport (>= 2.3.11)
       hashie (= 3.4.0)
     i18n (0.7.0)
