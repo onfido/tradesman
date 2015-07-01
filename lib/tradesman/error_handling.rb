@@ -3,7 +3,7 @@ module Tradesman
     def run_and_convert_exceptions(&block)
       block.call
     rescue *expected_errors_map.keys => e
-      raise tradesman_error_from_gem_error(e.class)
+      raise tradesman_error_from_gem_error(e.class).new(e.message)
     end
 
     def tradesman_error_from_gem_error(gem_error)
