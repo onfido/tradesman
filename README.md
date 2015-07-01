@@ -52,6 +52,9 @@ Tradesman::CreateUserForEmployer.go(employer, [user_params, user_params, user_pa
 # Update multiple records with 1 set of parameters
 Tradesman::UpdateUser.go([user1, user2, user3], update_params)
 
+# Update multiple records based on a query hash
+Tradesman::UpdateUser.go({ first_name: 'Blake' }, update_params)
+
 # Update n records with n sets of parameters
 update_params = {
   user1.id => user1_params,
@@ -63,6 +66,9 @@ Tradesman::UpdateUser.go(update_params.keys, update_params.values)
 
 # Delete multiple records
 Tradesman::DeleteUser.go([id1, id2, id3])
+
+# Delete multiple records based on a query hash
+Tradesman::DeleteUser.go(first_name: 'Blake')
 ```
 
 ## Parsing Rules
