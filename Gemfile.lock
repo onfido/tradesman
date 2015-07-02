@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    tradesman (1.0.3)
+    tradesman (1.0.4)
       horza (~> 0.3.9)
       tzu (~> 0.0.2.0)
 

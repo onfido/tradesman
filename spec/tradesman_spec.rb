@@ -264,7 +264,9 @@ describe Tradesman do
       context 'passing query hash and single valid parameters' do
         let(:query_params) { { last_name: 'Smith' } }
         let(:update_params) { { last_name: 'Turner' } }
-        let(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+        let(:other_params) { { last_name: 'Sharkasy' } }
+        let!(:records) { Tradesman::CreateStrictUser.go([valid_params, valid_params, valid_params]).result }
+        let!(:extraneous_records) { Tradesman::CreateStrictUser.go([other_params, other_params]).result }
 
         before do
           Tradesman::CreateStrictUser.go([query_params, query_params, query_params])

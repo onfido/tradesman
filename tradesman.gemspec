@@ -3,7 +3,7 @@ require 'orm_adapter/version'
 
 Gem::Specification.new do |s|
   s.name = 'tradesman'
-  s.version = '1.0.4'
+  s.version = '1.0.5'
   s.platform = Gem::Platform::RUBY
   s.authors = ['Blake Turner', 'Morgan Bruce']
   s.description = 'Encapsulate common application behaviour with dynamically generated classes'

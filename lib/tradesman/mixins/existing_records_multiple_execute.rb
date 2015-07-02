@@ -3,7 +3,7 @@ module Tradesman
     private
 
     def query_for_ids(params)
-      params[:id] = self.class.adapter.find_all(params[:id]).collect &:id
+      params[:id] = self.class.adapter.find_all(conditions: params[:id]).collect &:id
       params
     end
 
