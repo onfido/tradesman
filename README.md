@@ -37,7 +37,7 @@ Tradesman::UpdateUser.go(params[:id], user_update_params) do
   end
 end
 
-# Delete
+# Delete(destroy all dependencies too)
 Tradesman::DeleteUser.go(params[:id])
 
 # Create as a child of an existing record
