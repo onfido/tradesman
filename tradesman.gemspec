@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_runtime_dependency 'horza', '~> 0.3.9'
-  s.add_runtime_dependency 'tzu', '~> 0.0.2.0'
+  s.add_runtime_dependency 'tzu', '~> 0.1.1.0'
 
   s.add_development_dependency 'bundler', '>= 1.0.0'
   s.add_development_dependency 'activerecord', '>= 3.2.15'
