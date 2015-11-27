@@ -1,9 +1,9 @@
 $:.push File.expand_path('../lib', __FILE__)
-require 'orm_adapter/version'
+require 'tradesman/version'
 
 Gem::Specification.new do |s|
   s.name = 'tradesman'
-  s.version = '1.0.9'
+  s.version = Tradesman::VERSION
   s.platform = Gem::Platform::RUBY
   s.authors = ['Blake Turner', 'Morgan Bruce']
   s.description = 'Encapsulate common application behaviour with dynamically generated classes'
@@ -16,13 +16,13 @@ Gem::Specification.new do |s|
   s.test_files    = Dir.glob("{spec}/**/*")
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'horza', '~> 0.5.0'
+  s.add_runtime_dependency 'horza', '~> 1.0'
   s.add_runtime_dependency 'tzu', '~> 0.1'
 
   s.add_development_dependency 'bundler', '>= 1.0.0'
-  s.add_development_dependency 'activerecord', '>= 3.2.15'
-  s.add_development_dependency 'activesupport', '>= 3.2.15'
-  s.add_development_dependency 'rspec', '>= 2.4.0'
+  s.add_development_dependency 'activerecord', '~> 3.2'
+  s.add_development_dependency 'activesupport', '~> 3.2'
+  s.add_development_dependency 'rspec'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'byebug'
 end

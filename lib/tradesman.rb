@@ -14,6 +14,7 @@ require 'tradesman/errors'
 require 'tradesman/error_handling'
 require 'tradesman/parser'
 require 'tradesman/template'
+require 'tradesman/version'
 
 module Tradesman
   extend Configuration
