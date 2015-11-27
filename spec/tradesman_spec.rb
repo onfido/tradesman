@@ -13,30 +13,30 @@ else
     end
   end
 
-  module TradesmanSpec
-    class Employer < ActiveRecord::Base
-      has_many :users
-    end
 
-    class User < ActiveRecord::Base
-      belongs_to :employer
-    end
-
-    class StrictUser < ActiveRecord::Base
-      belongs_to :employer
-
-      validates :last_name, presence: true
-    end
+  class Employer < ActiveRecord::Base
+    has_many :users
   end
+
+  class User < ActiveRecord::Base
+    belongs_to :employer
+  end
+
+  class StrictUser < ActiveRecord::Base
+    belongs_to :employer
+
+    validates :last_name, presence: true
+  end
+
 end
 
 describe Tradesman do
   let(:adapter) { :active_record }
   before { Tradesman.configure { |config| config.adapter = adapter } }
   after do
-    TradesmanSpec::User.delete_all
-    TradesmanSpec::StrictUser.delete_all
-    TradesmanSpec::Employer.delete_all
+    User.delete_all
+    StrictUser.delete_all
+    Employer.delete_all
   end
 
   context '#configure' do
@@ -51,44 +51,11 @@ describe Tradesman do
       after { Tradesman.reset }
 
       it 'throws error' do
-        expect { Tradesman.adapter }.to raise_error(Tradesman::Base)
+        expect { Tradesman.adapter }.to raise_error(Horza::Errors::AdapterError)
       end
     end
   end
 
-  context 'namespaces' do
-    context 'when no namespaces are set' do
-      it 'does not forward namespaces to Horza' do
-        expect(Horza.configuration.namespaces.empty?).to be true
-      end
-    end
-    context 'when namespaces are set' do
-      before do
-        Tradesman.configure { |config| config.namespaces = [TradesmanSpec] }
-      end
-
-      it 'forwards namespaces to Horza' do
-        expect(Horza.configuration.namespaces).to eq [TradesmanSpec]
-      end
-    end
-  end
-
-  context 'development_mode' do
-    context 'when development_mode is not set' do
-      it 'does not forward namespaces to Horza' do
-        expect(Horza.configuration.development_mode).to be nil
-      end
-    end
-    context 'when namespaces are set' do
-      before do
-        Tradesman.configure { |config| config.development_mode = true }
-      end
-
-      it 'forwards namespaces to Horza' do
-        expect(Horza.configuration.development_mode).to be true
-      end
-    end
-  end
 
   context '#go' do
     context 'Create' do
@@ -145,7 +112,7 @@ describe Tradesman do
       end
 
       context 'for parent' do
-        let(:employer) { TradesmanSpec::Employer.create }
+        let(:employer) { Employer.create }
         let(:outcome) { Tradesman::CreateUserForEmployer.go(employer.id, last_name: 'Turner') }
 
         it 'creates a new record' do
@@ -198,7 +165,7 @@ describe Tradesman do
   end
 
   context 'Update' do
-    let(:user) { TradesmanSpec::User.create(last_name: 'Smith') }
+    let(:user) { User.create(last_name: 'Smith') }
     context 'when parameters are valid' do
       let(:outcome) { Tradesman::UpdateUser.go(user.id, last_name: 'Turner') }
 
@@ -213,7 +180,7 @@ describe Tradesman do
     end
 
     context 'when parameters are invalid' do
-      let(:strict_user) { TradesmanSpec::StrictUser.create(last_name: 'Smith') }
+      let(:strict_user) { StrictUser.create(last_name: 'Smith') }
       let(:outcome) { Tradesman::UpdateStrictUser.go(strict_user, last_name: nil) }
 
       it 'returns an invalid outcome' do
@@ -284,7 +251,7 @@ describe Tradesman do
 
   context 'Delete' do
     context 'when parameters are valid' do
-      let!(:user) { TradesmanSpec::User.create }
+      let!(:user) { User.create }
       let(:outcome) { Tradesman::DeleteUser.go(user) }
 
       it 'executes successfully' do
@@ -293,7 +260,7 @@ describe Tradesman do
       end
 
       it 'deletes record' do
-        expect { outcome }.to change(TradesmanSpec::User, :count).by(-1)
+        expect { outcome }.to change(User, :count).by(-1)
       end
     end
 
@@ -361,7 +328,7 @@ describe Tradesman do
       end
 
       context 'for parent' do
-        let(:employer) { TradesmanSpec::Employer.create }
+        let(:employer) { Employer.create }
         let(:outcome) { Tradesman::CreateUserForEmployer.go!(employer.id, last_name: 'Turner') }
 
         it 'creates a new record' do
@@ -382,7 +349,7 @@ describe Tradesman do
   end
 
   context 'Update' do
-    let(:user) { TradesmanSpec::User.create(last_name: 'Smith') }
+    let(:user) { User.create(last_name: 'Smith') }
     context 'when parameters are valid' do
       let(:outcome) { Tradesman::UpdateUser.go!(user.id, last_name: 'Turner') }
 
@@ -397,7 +364,7 @@ describe Tradesman do
     end
 
     context 'when parameters are invalid' do
-      let(:strict_user) { TradesmanSpec::StrictUser.create(last_name: 'Smith') }
+      let(:strict_user) { StrictUser.create(last_name: 'Smith') }
       let(:outcome) { Tradesman::UpdateStrictUser.go!(strict_user, last_name: nil) }
 
       it 'throws error' do
@@ -408,7 +375,7 @@ describe Tradesman do
 
   context 'Delete' do
     context 'when parameters are valid' do
-      let!(:user) { TradesmanSpec::User.create }
+      let!(:user) { User.create }
       let(:outcome) { Tradesman::DeleteUser.go!(user) }
 
       it 'executes successfully' do
@@ -417,7 +384,7 @@ describe Tradesman do
       end
 
       it 'deletes record' do
-        expect { outcome }.to change(TradesmanSpec::User, :count).by(-1)
+        expect { outcome }.to change(User, :count).by(-1)
       end
     end
 
