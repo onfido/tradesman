@@ -211,63 +211,17 @@ end
 
 The Tradesman version is self-documenting, cruft-free, and designed for testing.
 
+
 ## Config
+<tt>Tradesman</tt> uses the underlying Horza configuration, so all configuration options can be set on <tt>Tradesman</tt> just like they would on <tt>Horza</tt>.
 
-**Define your adapter**
+***e.g. Defining your adapter***
 
-Tradesman sits on top of [Horza](https://github.com/onfido/horza/), and can use any of its adapters.
-
+_config/initializers/tradesman.rb_
 ```ruby
-# config/initializers/tradesman.rb
 Tradesman.configure { |config| config.adapter = :active_record }
 ```
-
-**Development Mode**
-
-Turn on development mode to help Tradesman cope with Rails' lazy-loading of classes.
-
-```ruby
-# config/initializers/tradesman.rb
-Tradesman.configure do |config|
-  config.adapter = :active_record
-  config.development_mode = Rails.env.development?
-end
-```
-
-**Model Namespaces**
-
-Lazy loading becomes more complex if your models are namespaced.
-
-Consider:
-```ruby
-module MyNamespace
-  class Employer < ActiveRecord::Base
-    has_many :users
-  end
-end
-
-module MyOtherNamespace
-  class User < ActiveRecord::Base
-    belongs_to :employer
-  end
-end
-```
-
-In order to help Tradesman lazy load these models, you need to explicitly configure any namespaces:
-
-```ruby
-# config/initializers/tradesman.rb
-Tradesman.configure do |config|
-  config.adapter = :active_record
-  config.development_mode = Rails.env.development?
-  config.namespaces = [MyNamespace, MyOtherNamespace]
-end
-```
-
-**Reset Tradesman** _(Can be done at runtime or in tests)_
-```ruby
-Tradesman.reset
-```
+For more details on configuration check out the <tt>Horza</tt> [documentation.](https://github.com/onfido/horza) 
 
 ## Mocking & Stubbing in Tests
 
