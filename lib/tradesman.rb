@@ -9,22 +9,18 @@ require 'tradesman/builders/create_for_parent'
 require 'tradesman/builders/delete'
 require 'tradesman/builders/update'
 require 'tradesman/class_methods'
-require 'tradesman/configuration'
 require 'tradesman/errors'
 require 'tradesman/error_handling'
 require 'tradesman/parser'
 require 'tradesman/template'
+require 'tradesman/version'
 
 module Tradesman
-  extend Configuration
+  extend Horza::SharedConfig
 
-  class << self
-    attr_writer :configuration
-
-    def const_missing(class_name)
-      parser = ::Tradesman::Parser.new(class_name)
-      return super(class_name) unless parser.match?
-      Builders.generate_class(parser)
-    end
+  def self.const_missing(class_name)
+    parser = ::Tradesman::Parser.new(class_name)
+    return super(class_name) unless parser.match?
+    Builders.generate_class(parser)
   end
 end
